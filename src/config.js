@@ -34,6 +34,11 @@ export const DEFAULTS = {
   laxativeMinutes: 20,
   laxativeChance: 0.85,
 
+  // 大白饭（2026-11-22 加）：涨肠多、降水少（干饭成形）、10 分钟内算"刚吃过"
+  riceGut: 18,
+  riceDry: 8,
+  riceWindowMin: 10,
+
   // 便意
   urgeStart: 55,
   idleBoostMax: 25,
@@ -147,6 +152,9 @@ export function normalizeConfig(input) {
   cfg.laxativeGut = clamp(cfg.laxativeGut, 0, 100)
   cfg.laxativeMinutes = clamp(cfg.laxativeMinutes, 1, 240)
   cfg.laxativeChance = clamp(cfg.laxativeChance, 0, 1)
+  cfg.riceGut = clamp(cfg.riceGut, 0, 100)
+  cfg.riceDry = clamp(cfg.riceDry, 0, 100)
+  cfg.riceWindowMin = clamp(cfg.riceWindowMin, 1, 120)
   cfg.urgeStart = clamp(cfg.urgeStart, 0, 100)
   cfg.urgeCrisis = clamp(cfg.urgeCrisis, 0, 100)
   cfg.slurryWetThreshold = clamp(cfg.slurryWetThreshold, 0, 100)
@@ -171,4 +179,5 @@ export function normalizeConfig(input) {
 
   return cfg
 }
+
 

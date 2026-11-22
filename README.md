@@ -94,6 +94,9 @@ pnpm install --no-frozen-lockfile --config.confirmModulesPurge=false
 | `laxativeGut` | 25 | 一剂泻药灌多少肠道 |
 | `laxativeMinutes` | 20 | 药效窗口（分钟） |
 | `laxativeChance` | 0.85 | 药效期内的事故概率（平时 0.5） |
+| `riceGut` | 18 | 一碗白饭涨多少肠道 |
+| `riceDry` | 8 | 一碗白饭降多少稀度（干饭成形） |
+| `riceWindowMin` | 10 | 「刚吃过」窗口（分钟） |
 
 完整表见 `docs/DESIGN.md` §8。
 
@@ -151,5 +154,6 @@ node --test test/
 ## License
 
 MIT
+
 
 

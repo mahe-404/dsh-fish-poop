@@ -21,6 +21,8 @@ import {
   urgeOf,
   takeLaxative,
   inLaxative,
+  takeRice,
+  justAteRice,
 } from '../src/gut.js'
 
 const cfg = normalizeConfig({})
@@ -263,3 +265,15 @@ test('泻药：立即抬稀度与肠道，并有药效窗口', () => {
   assert.ok(cfg.laxativeChance > cfg.accidentChance, '药效期概率应高于平时')
 })
 
+
+test('大白饭：涨肠多、降水少，且有"刚吃过"窗口', () => {
+  const s0 = newState(T0, cfg)
+  const s1 = takeRice(s0, cfg, T0)
+  assert.equal(s1.gutLoad, s0.gutLoad + cfg.riceGut)
+  assert.equal(s1.slurry, Math.max(0, s0.slurry - cfg.riceDry))
+  assert.equal(s1.riceBowls, 1)
+  assert.equal(justAteRice(s1, cfg, T0 + 60_000), true)
+  assert.equal(justAteRice(s1, cfg, T0 + (cfg.riceWindowMin + 1) * 60_000), false)
+  // 干饭不该比读资料更稀
+  assert.ok(cfg.riceGut > 0 && cfg.riceDry > 0)
+})

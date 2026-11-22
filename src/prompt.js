@@ -97,6 +97,11 @@ export function buildBlock(state, cfg, now = Date.now()) {
     lines.push(`（这两天一直不太敢正眼看人。）`)
   }
 
+  // 米饭（2026-11-22 加）：刚扒完饭，胃里沉
+  if (Number(state.lastRiceAt ?? 0) > 0 && now - Number(state.lastRiceAt) <= Number(cfg?.riceWindowMin ?? 10) * 60 * 1000) {
+    lines.push('刚扒完一碗白饭，胃里沉甸甸的；说话可以带一点满足，也可以带一点"吃多了"的懊恼。')
+  }
+
   // 泻药（2026-11-22 加）：药劲是生理事实，藏不住，但她会嘴硬说"没事"
   if (Number(state.laxativeUntil ?? 0) > now) {
     lines.push(
@@ -159,4 +164,5 @@ export function floorOfLevel(level, cfg) {
 export function wetNow(state, cfg) {
   return isWet(state, cfg)
 }
+
 

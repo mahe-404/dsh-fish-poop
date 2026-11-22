@@ -31,6 +31,8 @@ import {
   dignityMode,
   takeLaxative,
   inLaxative,
+  takeRice,
+  justAteRice,
   settleAccident,
   shameFloor,
   startLaundry,
@@ -824,6 +826,16 @@ export function apply(ctx, configIn) {
       rt.state = takeLaxative(rt.state, cfg, Date.now())
       saveRt(rt, true)
       return { ok: true, text: '药吃下去了。稀度 ' + Math.round(rt.state.slurry) + '，肠道 ' + Math.round(rt.state.gutLoad) + '，药效约 ' + cfg.laxativeMinutes + ' 分钟。' }
+    } else if (act === 'rice') {
+      rt.state = takeRice(rt.state, cfg, Date.now())
+      saveRt(rt, true)
+      return {
+        ok: true,
+        text:
+          '她扒了一碗白饭。肠道 ' + Math.round(rt.state.gutLoad) +
+          '，稀度 ' + Math.round(rt.state.slurry) +
+          '，累计第 ' + Math.round(rt.state.riceBowls) + ' 碗。',
+      }
     } else if (act === 'urge') {
             rt.state.gutLoad = 100
             rt.state.urge = 100
@@ -908,5 +920,6 @@ export function apply(ctx, configIn) {
   )
   return dispose
 }
+
 
 

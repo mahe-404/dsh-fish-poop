@@ -38,6 +38,9 @@ export function newState(now = Date.now(), cfg = {}) {
     // 泻药窗口（2026-11-22 加）：药效内 gutLoad/urge 被推起来，事故概率临时提高
     laxativeUntil: 0,
     laxativeTaken: 0,
+    // 米饭（2026-11-22 加）
+    riceBowls: 0,
+    lastRiceAt: 0,
     holdRounds: 0,
     pantiesDirty: 0,
     pantiesStock: stock,
@@ -83,6 +86,8 @@ export function normalizeState(raw, now = Date.now(), cfg = {}) {
   out.dignity = clamp(num(out.dignity, num(cfg.dignity, 70)), 0, 100)
   out.laxativeUntil = num(out.laxativeUntil, 0)
   out.laxativeTaken = Math.max(0, Math.round(num(out.laxativeTaken, 0)))
+  out.riceBowls = Math.max(0, Math.round(num(out.riceBowls, 0)))
+  out.lastRiceAt = num(out.lastRiceAt, 0)
   out.pantiesDirty = Math.max(0, Math.round(out.pantiesDirty))
   out.pantiesStock = Math.max(0, Math.round(out.pantiesStock))
   out.holdRounds = Math.max(0, Math.round(out.holdRounds))
@@ -441,3 +446,26 @@ export function takeLaxative(state, cfg, now = Date.now()) {
 export function inLaxative(state, now = Date.now()) {
   return num(state?.laxativeUntil, 0) > now
 }
+
+// ── 大白饭（2026-11-22 加） ────────────────────────────────────────────────
+
+/**
+ * 一碗白米饭。实、沉、干：
+ * 肠道涨得比 token 多（主食比读资料更顶饱），但稀度往下走（干饭成形）。
+ */
+export function takeRice(state, cfg, now = Date.now()) {
+  const next = { ...state }
+  next.gutLoad = clamp(next.gutLoad + num(cfg?.riceGut, 18), 0, 100)
+  next.slurry = clamp(next.slurry - num(cfg?.riceDry, 8), 0, 100)
+  next.riceBowls = Math.max(0, Math.round(num(next.riceBowls, 0))) + 1
+  next.lastRiceAt = now
+  next.updatedAt = now
+  return next
+}
+
+/** 这一轮是不是刚吃过饭（给注入用的短标记）。 */
+export function justAteRice(state, cfg, now = Date.now()) {
+  const t = num(state?.lastRiceAt, 0)
+  return t > 0 && now - t <= num(cfg?.riceWindowMin, 10) * 60 * 1000
+}
+
