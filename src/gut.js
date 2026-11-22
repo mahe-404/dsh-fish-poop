@@ -35,6 +35,9 @@ export function newState(now = Date.now(), cfg = {}) {
     // 自尊：事故掉、时间恢复；低于 dignityToiletAt 时她优先"找借口去厕所"而不是死撑
     dignity: num(cfg.dignity, 70),
     dignityAt: now,
+    // 泻药窗口（2026-11-22 加）：药效内 gutLoad/urge 被推起来，事故概率临时提高
+    laxativeUntil: 0,
+    laxativeTaken: 0,
     holdRounds: 0,
     pantiesDirty: 0,
     pantiesStock: stock,
@@ -78,6 +81,8 @@ export function normalizeState(raw, now = Date.now(), cfg = {}) {
   out.shameResidue = clamp(out.shameResidue, 0, 100)
   out.shameLevel = clamp(Math.round(out.shameLevel), 0, 4)
   out.dignity = clamp(num(out.dignity, num(cfg.dignity, 70)), 0, 100)
+  out.laxativeUntil = num(out.laxativeUntil, 0)
+  out.laxativeTaken = Math.max(0, Math.round(num(out.laxativeTaken, 0)))
   out.pantiesDirty = Math.max(0, Math.round(out.pantiesDirty))
   out.pantiesStock = Math.max(0, Math.round(out.pantiesStock))
   out.holdRounds = Math.max(0, Math.round(out.holdRounds))
@@ -414,3 +419,25 @@ export function dignityMode(state, cfg) {
   return 2
 }
 
+
+// ── 泻药（2026-11-22 加） ──────────────────────────────────────────────────
+
+/**
+ * 吃下一剂。立刻：稀度抬、肠道灌一截；接下来 minutes 分钟内危机概率提高。
+ * 她不知道药效多长——所以表现上是"以为过去了，又来了"。
+ */
+export function takeLaxative(state, cfg, now = Date.now()) {
+  const next = { ...state }
+  next.slurry = clamp(next.slurry + num(cfg?.laxativeSlurry, 35), 0, 100)
+  next.gutLoad = clamp(next.gutLoad + num(cfg?.laxativeGut, 25), 0, 100)
+  const mins = Math.max(1, num(cfg?.laxativeMinutes, 20))
+  next.laxativeUntil = now + mins * 60 * 1000
+  next.laxativeTaken = Math.max(0, Math.round(num(next.laxativeTaken, 0))) + 1
+  next.updatedAt = now
+  return next
+}
+
+/** 药效还在不。 */
+export function inLaxative(state, now = Date.now()) {
+  return num(state?.laxativeUntil, 0) > now
+}

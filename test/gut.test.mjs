@@ -19,6 +19,8 @@ import {
   startLaundry,
   tick,
   urgeOf,
+  takeLaxative,
+  inLaxative,
 } from '../src/gut.js'
 
 const cfg = normalizeConfig({})
@@ -246,4 +248,18 @@ test('稀度阈值判定', () => {
 })
 
 
+
+
+test('泻药：立即抬稀度与肠道，并有药效窗口', () => {
+  const s0 = newState(T0, cfg)
+  const s1 = takeLaxative(s0, cfg, T0)
+  assert.equal(s1.slurry, s0.slurry + cfg.laxativeSlurry)
+  assert.equal(s1.gutLoad, s0.gutLoad + cfg.laxativeGut)
+  assert.equal(inLaxative(s1, T0), true)
+  // 过了药效窗口就失效
+  const later = T0 + (cfg.laxativeMinutes + 1) * 60_000
+  assert.equal(inLaxative(s1, later), false)
+  // 药效期内危机概率用 laxativeChance
+  assert.ok(cfg.laxativeChance > cfg.accidentChance, '药效期概率应高于平时')
+})
 

@@ -29,6 +29,8 @@ import {
   rollAccident,
   seeksToilet,
   dignityMode,
+  takeLaxative,
+  inLaxative,
   settleAccident,
   shameFloor,
   startLaundry,
@@ -286,10 +288,15 @@ export function apply(ctx, configIn) {
 
     if (cfg.enabled && rt.enabled && urge >= Number(cfg.urgeCrisis) && !pooped) {
       rt.state = holdOneRound(rt.state, 1, now)
-      if (rollAccident(rand, cfg)) {
+      // 药效期：换一个更高的概率（cfg.laxativeChance）
+      const onDrug = inLaxative(rt.state, now)
+      const roll = onDrug
+        ? { ...cfg, accidentChance: Number(cfg.laxativeChance) }
+        : cfg
+      if (rollAccident(rand, roll)) {
         const r = settleAccident(rt.state, cfg, now)
         rt.state = r.state
-        record(rt, 'accident', r.wet ? '没憋住，稀的，弄脏两条' : '没憋住，弄脏内裤', {
+        record(rt, 'accident', (onDrug ? '药劲上来，' : '') + (r.wet ? '没憋住，稀的，弄脏两条' : '没憋住，弄脏内裤'), {
           wet: r.wet,
           shame: Math.round(rt.state.shame),
           level: rt.state.shameLevel,
@@ -813,7 +820,11 @@ export function apply(ctx, configIn) {
             const r = feed(rt.state, { inputTokens: 20000, outputTokens: 1500 }, cfg, now)
             rt.state = r.state
             record(rt, 'debug', '调试：喂一顿', { got: r.got })
-          } else if (act === 'urge') {
+          } else if (act === 'pill') {
+      rt.state = takeLaxative(rt.state, cfg, Date.now())
+      saveRt(rt, true)
+      return { ok: true, text: '药吃下去了。稀度 ' + Math.round(rt.state.slurry) + '，肠道 ' + Math.round(rt.state.gutLoad) + '，药效约 ' + cfg.laxativeMinutes + ' 分钟。' }
+    } else if (act === 'urge') {
             rt.state.gutLoad = 100
             rt.state.urge = 100
           } else if (act === 'accident') {
@@ -897,4 +908,5 @@ export function apply(ctx, configIn) {
   )
   return dispose
 }
+
 

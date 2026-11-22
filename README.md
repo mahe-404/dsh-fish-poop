@@ -24,7 +24,7 @@ assistant/message 的 usage
    - 便意够了但自尊还在 → **她自己找借口走开**（不掷硬币）
    - 自尊塌了 → 死要面子硬撑，然后更容易出事
 3. **没有每日上限，也没有单次上限**（默认 0 = 不限）。节流靠门槛、`gutLoad −55`、注入冷却 30 分钟，不靠"今天不许再出"。
-4. **不做全局插件**（默认）：包只放在 `node_modules` 里让 loader 能解析，真正的加载点是某一个 agent 预设。换预设开会话就完全没有它。
+4. **全局装、按会话开关**：包加进 `dsh.profile.bundles`，任何会话都能调 `fish_switch`；但每个会话 **默认关**（`defaultEnabled: false`），说一句「开肚肚」才开始。**状态按会话隔离**，A 会话的肠道不会因为 B 会话在跑长任务而涨。
 
 ---
 
@@ -90,6 +90,10 @@ pnpm install --no-frozen-lockfile --config.confirmModulesPurge=false
 | `dignityToiletAt` | 45 | 低于此值就不再主动去厕所（开始硬撑） |
 | `dignityRecoverPerHour` | 6 | 每小时恢复 |
 | `pantiesStock` | 7 | 干净内裤库存 |
+| `laxativeSlurry` | 35 | 一剂泻药抬多少稀度 |
+| `laxativeGut` | 25 | 一剂泻药灌多少肠道 |
+| `laxativeMinutes` | 20 | 药效窗口（分钟） |
+| `laxativeChance` | 0.85 | 药效期内的事故概率（平时 0.5） |
 
 完整表见 `docs/DESIGN.md` §8。
 
@@ -147,3 +151,5 @@ node --test test/
 ## License
 
 MIT
+
+

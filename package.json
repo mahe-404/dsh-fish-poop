@@ -1,6 +1,6 @@
 {
   "name": "dsh-fish-poop",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "给 DeepSeek Harness 的生理副线：由真实 token 消耗驱动的肠道积存、便意、憋不住、羞耻、自尊与洗内裤。默认非全局，只挂在一个 agent 预设里。",
   "type": "module",
   "main": "./src/index.js",

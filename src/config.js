@@ -28,6 +28,12 @@ export const DEFAULTS = {
   dignityRecoverPerHour: 6,
   dignityToiletAt: 45,
 
+  // 泻药（2026-11-22 加）
+  laxativeSlurry: 35,
+  laxativeGut: 25,
+  laxativeMinutes: 20,
+  laxativeChance: 0.85,
+
   // 便意
   urgeStart: 55,
   idleBoostMax: 25,
@@ -137,6 +143,10 @@ export function normalizeConfig(input) {
   cfg.dignityPerBarely = clamp(cfg.dignityPerBarely, 0, 100)
   cfg.dignityRecoverPerHour = clamp(cfg.dignityRecoverPerHour, 0, 100)
   cfg.dignityToiletAt = clamp(cfg.dignityToiletAt, 0, 100)
+  cfg.laxativeSlurry = clamp(cfg.laxativeSlurry, 0, 100)
+  cfg.laxativeGut = clamp(cfg.laxativeGut, 0, 100)
+  cfg.laxativeMinutes = clamp(cfg.laxativeMinutes, 1, 240)
+  cfg.laxativeChance = clamp(cfg.laxativeChance, 0, 1)
   cfg.urgeStart = clamp(cfg.urgeStart, 0, 100)
   cfg.urgeCrisis = clamp(cfg.urgeCrisis, 0, 100)
   cfg.slurryWetThreshold = clamp(cfg.slurryWetThreshold, 0, 100)
@@ -161,3 +171,4 @@ export function normalizeConfig(input) {
 
   return cfg
 }
+

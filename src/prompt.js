@@ -97,6 +97,13 @@ export function buildBlock(state, cfg, now = Date.now()) {
     lines.push(`（这两天一直不太敢正眼看人。）`)
   }
 
+  // 泻药（2026-11-22 加）：药劲是生理事实，藏不住，但她会嘴硬说"没事"
+  if (Number(state.laxativeUntil ?? 0) > now) {
+    lines.push(
+      '肚子里有药劲：一阵一阵往下坠，忍的时候要停半拍、按住小腹。她嘴硬说"没事"，但坐不住。',
+    )
+  }
+
   // 自尊分支（2026-11-22 加）：她不是每次都当众认命，低的会躲、会嘴硬
   const dig = Number(state.dignity ?? cfg?.dignity ?? 70)
   if (dig < 55 && dig >= 25) {
@@ -152,3 +159,4 @@ export function floorOfLevel(level, cfg) {
 export function wetNow(state, cfg) {
   return isWet(state, cfg)
 }
+
