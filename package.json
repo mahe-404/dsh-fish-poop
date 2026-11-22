@@ -1,0 +1,49 @@
+{
+  "name": "dsh-fish-poop",
+  "version": "0.3.0",
+  "description": "给 DeepSeek Harness 的生理副线：由真实 token 消耗驱动的肠道积存、便意、憋不住、羞耻、自尊与洗内裤。默认非全局，只挂在一个 agent 预设里。",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "panel",
+    "docs",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test --test-concurrency=1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "cordis",
+    "persona",
+    "roleplay"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mahe-404/dsh-fish-poop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mahe-404/dsh-fish-poop/issues"
+  },
+  "homepage": "https://github.com/mahe-404/dsh-fish-poop#readme"
+}

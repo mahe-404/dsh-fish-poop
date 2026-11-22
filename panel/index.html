@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大肥鱼的肚肚</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#242a34; --txt:#e8ecf3; --dim:#8b95a7;
+    --blue:#5aa9e6; --pink:#f0788c; --amber:#e8b45a; --violet:#a78bfa; --gray:#6b7488; --green:#5fc99a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.55 -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:22px 16px 60px}
+  h1{font-size:19px;margin:0 0 4px}
+  .sub{color:var(--dim);font-size:12px;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .metric .k{color:var(--dim);font-size:12px}
+  .metric .v{font-size:22px;font-weight:600;letter-spacing:.3px}
+  .bar{height:6px;border-radius:4px;background:#20252e;margin-top:6px;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;background:var(--blue);transition:width .4s}
+  .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);color:var(--dim)}
+  .tag.on{color:#0f1115;background:var(--green);border-color:var(--green);font-weight:600}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  button{background:#20252e;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit}
+  button:hover{border-color:#3a4353}
+  button.primary{background:#1d3a52;border-color:#2d5a7d}
+  button.warn{background:#3a2026;border-color:#5d2d37}
+  button.mini{padding:4px 9px;font-size:12px}
+  input[type=text],input[type=number]{background:#11141a;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;width:100%}
+  label{display:block;color:var(--dim);font-size:12px;margin-bottom:4px}
+  .cfg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .log{max-height:260px;overflow:auto;font-size:12.5px}
+  .log div{padding:5px 0;border-bottom:1px dashed #1e232c;color:#c3ccda}
+  .log .t{color:var(--gray);margin-right:8px}
+  .block{white-space:pre-wrap;font-size:13px;background:#11141a;border:1px solid var(--line);border-radius:8px;padding:10px;color:#cfd8e6;min-height:44px}
+  .hide{display:none}
+  .warnText{color:var(--amber);font-size:12px}
+  .sess{padding:11px 0;border-bottom:1px solid #1e232c;cursor:pointer}
+  .sess:hover{background:#141821}
+  .sess .id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--dim)}
+  .sess .nums{font-size:12px;color:#9aa5b6;margin-top:3px}
+  .sess.active{outline:1px solid #2d5a7d;border-radius:8px;padding-left:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>大肥鱼的肚肚</h1>
+  <div class="sub">每个会话一份、各自开关 · 事故概率固定 1/2 · 没有每日上限</div>
+
+  <div class="card" id="authCard">
+    <label>面板令牌（文件：__TOKEN_FILE__）</label>
+    <div class="row">
+      <input type="text" id="token" placeholder="粘贴 面板令牌.txt 里那一行" style="flex:1;min-width:220px">
+      <button class="primary" id="saveToken">进入</button>
+    </div>
+  </div>
+
+  <div id="main" class="hide">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div><b>会话</b> <span class="tag" id="sessCount">–</span></div>
+        <div class="row"><button class="mini" id="refresh">刷新</button></div>
+      </div>
+      <div id="sessList" style="margin-top:8px"></div>
+    </div>
+
+    <div id="detail" class="hide">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <b id="dLabel">–</b>
+            <div class="sess"><span class="id" id="dSid"></span></div>
+          </div>
+          <div class="row">
+            <button class="primary" id="dOn">开</button>
+            <button id="dOff">关</button>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:14px">
+          <div class="metric"><div class="k">肠道积存</div><div class="v" id="vGut">–</div><div class="bar"><i id="bGut"></i></div></div>
+          <div class="metric"><div class="k">便意</div><div class="v" id="vUrge">–</div><div class="bar"><i id="bUrge"></i></div></div>
+          <div class="metric"><div class="k">稀度</div><div class="v" id="vSlurry">–</div><div class="bar"><i id="bSlurry"></i></div></div>
+          <div class="metric"><div class="k">羞耻</div><div class="v" id="vShame">–</div><div class="bar"><i id="bShame"></i></div></div>
+          <div class="metric"><div class="k">耻度档位</div><div class="v" id="vLevel" style="font-size:16px">–</div><div class="bar"><i id="bLevel" style="background:var(--violet)"></i></div></div>
+          <div class="metric"><div class="k">余羞（跨天）</div><div class="v" id="vResidue">–</div><div class="bar"><i id="bResidue" style="background:var(--gray)"></i></div></div>
+          <div class="metric"><div class="k">盆里 / 柜里</div><div class="v" id="vPanty" style="font-size:18px">–</div></div>
+          <div class="metric"><div class="k">今天 / 累计事故</div><div class="v" id="vAcc" style="font-size:18px">–</div></div>
+          <div class="metric"><div class="k">憋了几轮</div><div class="v" id="vHold">–</div></div>
+          <div class="metric"><div class="k">当前状态</div><div class="v" id="vMode" style="font-size:16px">–</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div><b>注入块</b> <span class="tag" id="blockMode">–</span></div>
+          <div class="row">
+            <button class="mini" id="actFeed">喂一顿</button>
+            <button class="mini" id="actUrge">强制便意</button>
+            <button class="mini" id="actLaundry">洗内裤</button>
+            <button class="mini warn" id="actAccident">强制事故</button>
+            <button class="mini warn" id="actClean">清空</button>
+          </div>
+        </div>
+        <div class="block" id="blockText" style="margin-top:10px">（安静）</div>
+        <div class="warnText" id="debugHint"></div>
+      </div>
+
+      <div class="card">
+        <b>时间线</b>
+        <div class="log" id="logList"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <b>全局参数</b>
+      <div class="cfg" style="margin-top:10px" id="cfgGrid"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="primary" id="saveCfg">保存参数</button>
+        <span class="warnText" id="cfgMsg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id)
+  const KEY = 'dsh-fish-poop-token'
+  let token = sessionStorage.getItem(KEY) || ''
+  let curSid = ''
+
+  const NUM_FIELDS = ['tokensPerMeal','accidentChance','urgeStart','urgeCrisis','slurryWetThreshold',
+    'laundryMinutes','injectCooldownMin','injectMaxChars','pantiesStock','pruneDays','hotKeys','shameDecayByLevel']
+  const BOOL_FIELDS = ['enabled','defaultEnabled','debugMode']
+
+  async function api(path, opts = {}) {
+    const res = await fetch('/fish-poop/api/' + path, {
+      ...opts,
+      headers: { 'x-fish-token': token, 'content-type': 'application/json' },
+    })
+    if (res.status === 401) {
+      $('main').classList.add('hide'); $('authCard').classList.remove('hide')
+      throw new Error('unauthorized')
+    }
+    return res.json()
+  }
+
+  const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))
+  const setBar = (bar, v) => { bar.style.width = Math.max(0, Math.min(100, v)) + '%' }
+
+  async function loadSessions() {
+    const r = await api('sessions')
+    const list = r.sessions || []
+    $('sessCount').textContent = list.length + ' 个'
+    $('sessList').innerHTML = list.map((s) => `
+      <div class="sess ${s.sid === curSid ? 'active' : ''}" data-sid="${escapeHtml(s.sid)}">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <span class="tag ${s.enabled ? 'on' : ''}">${s.enabled ? '开' : '关'}</span>
+            <b style="margin-left:6px">${escapeHtml(s.label || '未命名会话')}</b>
+          </div>
+          <span class="id">${escapeHtml(String(s.sid).slice(0, 18))}…</span>
+        </div>
+        <div class="nums">肠道 ${s.gutLoad}｜便意 ${s.urge}｜稀度 ${s.slurry}｜羞耻 ${s.shame} Lv.${s.shameLevel}` +
+          `｜盆 ${s.pantiesDirty}/柜 ${s.pantiesStock}｜事故 ${s.accidentsToday}｜${escapeHtml(s.mode)}</div>
+      </div>`).join('') || '<div class="warnText">还没有任何会话开过肚肚。在对话里说「开肚肚」，或者在这里点开会话。</div>'
+
+    for (const el of $('sessList').querySelectorAll('.sess')) {
+      el.onclick = () => { curSid = el.dataset.sid; loadSessions(); loadDetail() }
+    }
+  }
+
+  async function loadDetail() {
+    if (!curSid) return
+    const r = await api('state?sid=' + encodeURIComponent(curSid))
+    if (!r.ok) return
+    const s = r.summary
+    $('detail').classList.remove('hide')
+    $('dLabel').textContent = s.label || '未命名会话'
+    $('dSid').textContent = s.sid + (s.enabled ? ' · 开' : ' · 关')
+    $('vGut').textContent = s.gutLoad
+    $('vUrge').textContent = s.urge
+    $('vSlurry').textContent = s.slurry
+    $('vShame').textContent = s.shame
+    $('vLevel').textContent = 'Lv.' + s.shameLevel
+    $('vResidue').textContent = s.shameResidue
+    $('vPanty').textContent = s.pantiesDirty + ' / ' + s.pantiesStock
+    $('vAcc').textContent = s.accidentsToday + ' / ' + s.accidentsTotal
+    $('vHold').textContent = s.holdRounds
+    $('vMode').textContent = s.mode
+    setBar($('bGut'), s.gutLoad); setBar($('bUrge'), s.urge); setBar($('bSlurry'), s.slurry)
+    setBar($('bShame'), s.shame); setBar($('bLevel'), s.shameLevel * 25); setBar($('bResidue'), s.shameResidue)
+    $('blockText').textContent = r.block || '（安静）'
+    $('blockMode').textContent = s.mode
+    $('debugHint').textContent = r.config.debugMode ? '' : '调试模式关着：强制事故 / 清空 不可用'
+    $('logList').innerHTML = (r.history || []).slice().reverse().map((h) => {
+      const t = new Date(h.at).toLocaleString('zh-CN', { hour12: false })
+      return `<div><span class="t">${t}</span>${escapeHtml(h.kind)} · ${escapeHtml(h.text || '')}</div>`
+    }).join('') || '<div class="t">还没有记录</div>'
+    renderCfg(r.config)
+  }
+
+  function renderCfg(cfg) {
+    if ($('cfgGrid').dataset.done) return
+    $('cfgGrid').dataset.done = '1'
+    const add = (k, type) => {
+      const wrap = document.createElement('div')
+      const lab = document.createElement('label')
+      lab.textContent = k
+      const input = document.createElement('input')
+      if (type === 'bool') { input.type = 'text'; input.value = String(cfg[k]); input.dataset.bool = '1' }
+      else {
+        input.type = type === 'number' ? 'number' : 'text'
+        input.value = Array.isArray(cfg[k]) ? cfg[k].join(',') : (cfg[k] ?? '')
+        if (type === 'number') input.dataset.num = '1'
+      }
+      input.dataset.key = k
+      wrap.append(lab, input)
+      $('cfgGrid').append(wrap)
+    }
+    for (const k of BOOL_FIELDS) add(k, 'bool')
+    for (const k of NUM_FIELDS) add(k, k === 'shameDecayByLevel' || k === 'hotKeys' ? 'text' : 'number')
+  }
+
+  async function toggle(enabled) {
+    if (!curSid) return
+    await api('toggle', { method: 'POST', body: JSON.stringify({ sid: curSid, enabled }) })
+    await loadSessions(); await loadDetail()
+  }
+
+  $('saveToken').onclick = () => {
+    token = $('token').value.trim()
+    sessionStorage.setItem(KEY, token)
+    boot().catch(() => alert('令牌不对'))
+  }
+  $('refresh').onclick = () => { loadSessions(); loadDetail() }
+  $('dOn').onclick = () => toggle(true)
+  $('dOff').onclick = () => toggle(false)
+  $('saveCfg').onclick = async () => {
+    const body = {}
+    for (const input of $('cfgGrid').querySelectorAll('input')) {
+      const k = input.dataset.key
+      if (input.dataset.bool) body[k] = input.value.trim() === 'true'
+      else if (input.dataset.num) body[k] = Number(input.value)
+      else if (k === 'shameDecayByLevel') body[k] = input.value.split(/[,，\s]+/).filter(Boolean).map(Number)
+      else body[k] = input.value
+    }
+    const r = await api('config', { method: 'POST', body: JSON.stringify(body) })
+    $('cfgMsg').textContent = '已保存：' + (r.applied || []).length + ' 项'
+    $('cfgGrid').dataset.done = ''
+    await loadDetail()
+  }
+
+  const act = (name) => async () => {
+    if (!curSid) return
+    const r = await api('action', { method: 'POST', body: JSON.stringify({ sid: curSid, action: name }) })
+    if (r.ok === false && r.text) alert(r.text)
+    await loadSessions(); await loadDetail()
+  }
+  $('actFeed').onclick = act('feed')
+  $('actUrge').onclick = act('urge')
+  $('actLaundry').onclick = act('laundry')
+  $('actAccident').onclick = act('accident')
+  $('actClean').onclick = act('clean')
+
+  async function boot() {
+    $('authCard').classList.add('hide')
+    $('main').classList.remove('hide')
+    await loadSessions()
+    if (!curSid) {
+      const r = await api('sessions')
+      if (r.sessions && r.sessions.length) curSid = r.sessions[0].sid
+    }
+    await loadDetail()
+  }
+
+  if (token) boot().catch(() => {})
+  setInterval(() => {
+    if (token && !$('main').classList.contains('hide')) { loadSessions(); loadDetail() }
+  }, 6000)
+})()
+</script>
+</body>
+</html>

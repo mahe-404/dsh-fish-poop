@@ -1,0 +1,10 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# 运行期状态：绝对不要提交
+fish-poop/
+*.state.json
+PAUSED
+sessions/

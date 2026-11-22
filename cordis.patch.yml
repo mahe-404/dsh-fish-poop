@@ -1,0 +1,20 @@
+# dsh-fish-poop —— DSH bundle patch
+#
+# 全局加载：DSH 启动时把本插件插进 profile 的配置树，所以**每个会话**都看得见它的工具。
+# 但肚肚本身是每个会话一份、默认关：开与关由 fish_switch（或面板）在会话内决定，
+# 注入只注册在那个 agent 自己的 scope 上，不会漏到别的会话。
+#
+# name 必须与包名一致（dsh-fish-poop）。
+
+- insert:
+    - id: fish-poop
+      name: dsh-fish-poop
+      config:
+        # 主机总闸：false = 所有会话都没肚子
+        enabled: true
+        # 新会话默认关，要自己说"开肚肚"
+        defaultEnabled: false
+        personaName: 大肥鱼
+        # 事故概率固定 1/2；无每日上限
+        accidentChance: 0.5
+        injectCooldownMin: 30
